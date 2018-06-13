@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "moloch.name" . }}-headless
+  namespace: default
+  labels:
+    app: {{ template "moloch.name" . }}
+    role: client
+spec:
+  clusterIP: None
+  selector:
+    app: {{ template "moloch.name" . }}
+    role: client
+

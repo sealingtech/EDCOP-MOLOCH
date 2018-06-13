@@ -1,0 +1,8 @@
+apiVersion: v1
+name: moloch
+home: https://github.com/sealingtech/EDCOP
+version: 0.1.0
+description: EDCOP Moloch Chart
+details:
+  This Chart provides Moloch capture and viewer nodes deployed as statefulsets and deployments, respectively. The viewer nodes are deployed onto master nodes and the capture nodes are deployed to the worker nodes within the EDCOP project. 
+icon: https://molo.ch/moloch_2x2.png 

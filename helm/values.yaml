@@ -1,0 +1,41 @@
+# EDCOP Moloch Chart values
+images:
+  moloch: miked235/moloch
+networks:
+  # Overlay is the name of the default cni network
+  overlay: calico
+  passive: passive
+volumes:
+  # Persistent data location on the host to store Moloch's data
+  logs: /bulk/EDCOP/moloch/logs
+  raw: /bulk/EDCOP/moloch/raw
+nodeSelector:
+  worker: worker
+  viewer: master
+ingress:
+  # Enter the FQDN of your host
+  host: physical.edcop.io
+molochConfig:  
+  # Nodes refers to the number of worker nodes you have
+  workerNodes: 3
+  # These settings impact Moloch's overall performance
+  # https://github.com/aol/moloch/wiki/Settings#High_Performance_Settings
+  performance:
+    maxStreams: 1000000
+    maxPacketsInQueue: 200000
+    maxPackets: 10000           # Moloch writes a session record after this many
+    packetThreads: 5            
+    pcapWriteSize: 262143       # Buffer size when writing pcap files
+    tpacketv3Threads: 2         
+  env:
+    # Admin user for the web interface
+    adminpw: supersecretpw
+    clusterpw: anothersupersecretpw
+    encryptpw: randencryptpw    # Recommanded to be random, never have to type it in
+  # Requests are set to accommodate limited resource VMs
+  requests:
+    cpu: 100m
+    memory: 64Mi
+  limits:
+    cpu: 4 
+    memory: 8G
