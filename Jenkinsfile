@@ -53,8 +53,8 @@ node {
       sh "helm install --set $custom_image='$container_tag:$env.BUILD_ID' --name='$user_id-$tool_name-$env.BUILD_ID' -f $custom_values_url $tool_name"
   }
 
-  stage('sleeping 3 minutes') {
-    sleep(180)
+  stage('sleeping 4 minutes') {
+    sleep(240)
   }
 
   stage('Verifying running pods') {
