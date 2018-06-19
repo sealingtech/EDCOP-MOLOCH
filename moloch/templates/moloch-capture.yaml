@@ -64,7 +64,7 @@ spec:
           name: molochlogs
         - mountPath: /data/moloch/raw
           name: molochraw
-        - mounthPath: /data/moloch/etc/config.ini
+        - mountPath: /data/moloch/etc/config.ini
           subPath: config.ini
           name: moloch-config
       volumes:
