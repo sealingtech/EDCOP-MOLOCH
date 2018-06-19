@@ -52,4 +52,33 @@ node {
   stage('helm deploy') {
       sh "helm install --set $custom_image='$container_tag:$env.BUILD_ID' --name='$user_id-$tool_name-$env.BUILD_ID' -f $custom_values_url $tool_name"
   }
+
+  stage('sleeping 3 minutes') {
+    sleep(180)
+  }
+
+  stage('Verifying running pods') {
+    /* Master (Viewer) */
+    def master_number_scheduled=sh(returnStdout: true, script: "kubectl get deployment $user_id-$tool_name-$env.BUILD_ID-$tool_name-viewer  -o jsonpath={.status.replicas}").trim()
+    def master_number_ready=sh(returnStdout: true, script: "kubectl get deployment $user_id-$tool_name-$env.BUILD_ID-$tool_name-viewer  -o jsonpath={.status.readyReplicas}").trim()
+
+    /* Workers (Capture) */
+    def worker_number_scheduled=sh(returnStdout: true, script: "kubectl get sts $user_id-$tool_name-$env.BUILD_ID-$tool_name  -o jsonpath={.status.replicas}").trim()
+    def worker_number_current=sh(returnStdout: true, script: "kubectl get sts $user_id-$tool_name-$env.BUILD_ID-$tool_name  -o jsonpath={.status.currentReplicas}").trim()
+    def worker_number_ready=sh(returnStdout: true, script: "kubectl get sts $user_id-$tool_name-$env.BUILD_ID-$tool_name  -o jsonpath={.status.readyReplicas}").trim()
+
+    /* Verifying Result */
+    if(master_number_ready==master_number_scheduled) {
+      println("Master pods are running")
+    } else {
+      println("Some or all of the master pods failed")
+      error("Some or all of the master pods failed")
+    }
+    if(worker_number_ready==worker_number_scheduled) {
+      println("Worker pods are running")
+    } else {
+      println("Some or all of the worker pods failed")
+      error("Some or all of the worker pods failed")
+    }
+  }
 }

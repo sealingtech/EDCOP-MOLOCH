@@ -7,8 +7,8 @@ networks:
   passive: passive
 volumes:
   # Persistent data location on the host to store Moloch's data
-  logs: /bulk/EDCOP/moloch/logs
-  raw: /bulk/EDCOP/moloch/raw
+  logs: /EDCOP/bulk/moloch/logs
+  raw: /EDCOP/bulk/moloch/raw
 nodeSelector:
   worker: worker
   viewer: master
@@ -17,7 +17,7 @@ ingress:
   host: physical.edcop.io
 molochConfig:  
   # Nodes refers to the number of worker nodes you have
-  workerNodes: 3
+  workerNodes: 2
   # These settings impact Moloch's overall performance
   # https://github.com/aol/moloch/wiki/Settings#High_Performance_Settings
   performance:
