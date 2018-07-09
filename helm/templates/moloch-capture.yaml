@@ -80,4 +80,4 @@ spec:
       restartPolicy: Always
       dnsPolicy: ClusterFirst
       nodeSelector:
-        nodetype: {{ .Values.nodeSelector.worker }}
+        {{ .Values.nodeSelector.worker }} : "true"

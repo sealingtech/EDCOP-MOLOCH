@@ -10,8 +10,8 @@ volumes:
   logs: /bulk/EDCOP/moloch/logs
   raw: /bulk/EDCOP/moloch/raw
 nodeSelector:
-  worker: worker
-  viewer: master
+  worker: sensor
+  viewer: infrastructure
 ingress:
   # Enter the FQDN of your host
   host: physical.edcop.io

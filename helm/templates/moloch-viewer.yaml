@@ -64,4 +64,4 @@ spec:
       restartPolicy: Always
       dnsPolicy: ClusterFirst
       nodeSelector:
-        nodetype: {{ .Values.nodeSelector.viewer }}
+        {{ .Values.nodeSelector.viewer }} : "true"
