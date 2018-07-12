@@ -55,7 +55,7 @@ data:
 
     # The base path for Moloch web access.  Must end with a / or bad things will happen
     # Default: "/"
-    webBasePath = /moloch/
+    webBasePath = /
 
     # Semicolon ';' seperated list of interfaces to listen on for traffic
     interface=net0
