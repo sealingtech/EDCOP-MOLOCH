@@ -14,10 +14,12 @@ nodeSelector:
   viewer: infrastructure
 ingress:
   # Enter the FQDN of your host
-  host: physical.edcop.io
+  host: moloch.physical.edcop.io
 molochConfig:  
+  # runAsUser refers to the UID of the user who owns the persistent data locations specified above (Only needed for worker nodes)
+  runAsUser: 2001
   # Nodes refers to the number of worker nodes you have
-  workerNodes: 2
+  workerNodes: 1
   # These settings impact Moloch's overall performance
   # https://github.com/aol/moloch/wiki/Settings#High_Performance_Settings
   performance:

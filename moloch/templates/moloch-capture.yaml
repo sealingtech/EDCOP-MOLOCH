@@ -31,6 +31,7 @@ spec:
         image: {{ .Values.images.moloch }}
         imagePullPolicy: Always
         securityContext:
+          runAsUser: {{ .Values.molochConfig.runAsUser }}
           capabilities:
               add:
                 - NET_ADMIN
