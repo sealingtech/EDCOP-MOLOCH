@@ -5,7 +5,7 @@ metadata:
   namespace: default
   labels:
     app: {{ template "moloch.name" . }}
-    role: client
+    role: capture
 spec:
   ports:
   - name: tcp-8005
@@ -15,5 +15,5 @@ spec:
   clusterIP: None
   selector:
     app: {{ template "moloch.name" . }}
-    role: client
+    role: capture
 
