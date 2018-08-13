@@ -26,7 +26,7 @@ node {
   }
 
 
-  stage('Build image') {
+  /* stage('Build image') {
       /* This builds the actual image; synonymous to
        * docker build on the command line */
       println("Building $container_tag:$env.BUILD_ID")
@@ -43,7 +43,7 @@ node {
       docker.withRegistry('https://gcr.io/edcop-dev/', 'gcr:edcop-dev') {
           app.push("$env.BUILD_ID")
       }
-  }
+  } */
 
   stage('helm lint') {
       sh "helm lint $tool_name/."
