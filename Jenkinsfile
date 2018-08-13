@@ -30,7 +30,7 @@ node {
   }
 
   stage('helm deploy') {
-      sh "helm install --name='$user_id-$tool_name-$env.BUILD_ID' -f $custom_values_url $tool_name"
+      sh "helm install --name='$user_id-$tool_name-$env.BUILD_ID' $tool_name"
   }
 
   stage('sleeping 4 minutes') {
