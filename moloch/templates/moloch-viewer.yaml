@@ -41,8 +41,6 @@ spec:
           value: {{ .Values.molochConfig.env.adminpw }}
         - name: SENSOR
           value: "false"
-        - name: VIEWER
-          value: "true"
         ports:
         - name: cport-8005
           containerPort: 8005
