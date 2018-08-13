@@ -7,6 +7,7 @@ metadata:
     app: {{ template "moloch.name" . }}
     role: client
 spec:
+  ports:
   - name: tcp-8005
     protocol: TCP
     port: 8005
