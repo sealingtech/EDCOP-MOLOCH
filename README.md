@@ -61,21 +61,21 @@ volumes:
 	  
 ## Node Selector
 
-This value tells Kubernetes which hosts the daemonset and statefulset should be deployed to by using labels given to the hosts. The viewer nodes run on the master while the capture nodes run on the workers. Hosts without the defined label will not receive pods. 
+This value tells Kubernetes which hosts the daemonset and statefulset should be deployed to by using labels given to the hosts. The viewer nodes run on the master while the capture nodes run on the workers. Hosts without the defined label will not receive pods. Moloch viewer will only deploy to the node labeled 'infrastructure=true', while the Moloch worker will deploy to nodes labeled 'sensor=true'
  
 ```
 nodeSelector:
-  worker: worker
-  viewer: master
+  worker: sensor
+  viewer: infrastructure
 ```
  
 To find out what labels your hosts have, please use the following:
 ```
 # kubectl get nodes --show-labels
 NAME		STATUS		ROLES		AGE		VERSION		LABELS
-master 		Ready		master		1d		v1.10.0		...,nodetype=master
-minion-1	Ready		<none>		1d		v1.10.0		...,nodetype=minion
-minion-2	Ready		<none>		1d		v1.10.0		...,nodetype=minion
+master 		Ready		master		1d		v1.10.0		...,infrastructure=true
+minion-1	Ready		<none>		1d		v1.10.0		...,sensor=true
+minion-2	Ready		<none>		1d		v1.10.0		...,sensor=true
 ```
 
 ## Ingress
