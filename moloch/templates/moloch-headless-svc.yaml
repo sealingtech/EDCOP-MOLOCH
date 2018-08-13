@@ -7,6 +7,10 @@ metadata:
     app: {{ template "moloch.name" . }}
     role: client
 spec:
+  - name: tcp-8005
+    protocol: TCP
+    port: 8005
+    targetPort: 8005
   clusterIP: None
   selector:
     app: {{ template "moloch.name" . }}
