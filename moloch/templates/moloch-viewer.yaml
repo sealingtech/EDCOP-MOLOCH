@@ -25,7 +25,7 @@ spec:
       - name: moloch-viewer
         image: {{ .Values.images.moloch }}
         imagePullPolicy: Always
-        command: ["bash","-c","echo >> search {{ template "moloch.fullname" . }}-headless.$NAMESPACE.svc.cluster.local && /data/moloch/docker-entrypoint.sh"]
+        command: ["bash","-c","echo 'search {{ template "moloch.fullname" . }}-headless.$NAMESPACE.svc.cluster.local' >> /etc/resolve.conf && /data/moloch/docker-entrypoint.sh"]
         securityContext:
           capabilities:
               add:
