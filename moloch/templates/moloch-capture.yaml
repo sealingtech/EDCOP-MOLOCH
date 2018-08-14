@@ -29,7 +29,7 @@ spec:
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
-        command: ["bash","-c","sed -i 's/search /search {{ template "moloch.fullname" . }}-headless.'$NAMESPACE'.svc.cluster.local /' /etc/resolv.conf && /data/moloch/docker-entrypoint.sh"]
+        command: ["bash","-c","cp /etc/resolv.conf /etc/resolv2.conf && sed -i 's/search /search {{ template "moloch.fullname" . }}-headless.'$NAMESPACE'.svc.cluster.local /' /etc/resolv2.conf && cp /etc/resolv2.conf /etc/resolv.conf /data/moloch/docker-entrypoint.sh"]
         imagePullPolicy: Always
         securityContext:
           capabilities:
