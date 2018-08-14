@@ -8,7 +8,8 @@ metadata:
     release: {{ .Release.Name }}
     role: capture
 spec:
-  serviceName: {{ template "moloch.name" . }}-headless
+  subdomain: "{{ template "moloch.fullname" . }}-capture"
+  serviceName: "{{ template "moloch.name" . }}-capture"
   replicas: {{ .Values.molochConfig.workerNodes }}
   selector:
     matchLabels:
@@ -26,6 +27,20 @@ spec:
         { "name": {{ .Values.networks.passive | quote }} }
       ]'
     spec:
+      initContainers:
+      - name: moloch-init
+        image: centos
+        command: ["bash","-c","/moloch-init.sh"]
+        volumeMounts:
+        - mountPath: /config.ini
+          subPath: config.ini
+          name: moloch-config
+        - mountPath: /data/moloch/etc
+          name: updated-moloch-config
+        - mountPath: /moloch-init.sh
+          subPath: moloch-init.sh
+          name: moloch-init-script
+          
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
@@ -62,9 +77,9 @@ spec:
           name: molochlogs
         - mountPath: /data/moloch/raw
           name: molochraw
-        - mountPath: /data/moloch/etc/config.ini
-          subPath: config.ini
-          name: moloch-config
+        - mountPath: /data/moloch/etc
+          name: updated-moloch-config
+
       volumes:
       - name: molochlogs
         hostPath:
@@ -75,6 +90,12 @@ spec:
       - name: moloch-config
         configMap:
           name: {{ template "moloch.fullname" . }}-config 
+      - name: updated-moloch-config
+        emptyDir: {}
+      - name: moloch-init-script
+        configMap:
+          name: {{ template "moloch.fullname" . }}-init-script 
+          defaultMode: 0744
       restartPolicy: Always
       dnsPolicy: ClusterFirst
       nodeSelector:
