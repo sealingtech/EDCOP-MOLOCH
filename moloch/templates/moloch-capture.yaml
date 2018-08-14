@@ -8,9 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     role: capture
 spec:
-  hostname: "{{ template "moloch.fullname" . }}-capture"
-  subdomain: "{{ template "moloch.fullname" . }}-capture"
-  serviceName: "{{ template "moloch.name" . }}-capture"
+  serviceName: "{{ template "moloch.name" . }}-headless"
   replicas: {{ .Values.molochConfig.workerNodes }}
   selector:
     matchLabels:
@@ -31,6 +29,7 @@ spec:
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
+        command: ["bash","-c","echo >> {{ template "moloch.fullname" . }}-headless.$NAMESPACE.svc.cluster.local && /data/moloch/docker-entrypoint.sh"]
         imagePullPolicy: Always
         securityContext:
           capabilities:
@@ -39,6 +38,10 @@ spec:
                 - NET_RAW
                 - IPC_LOCK
         env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: ES_HOST
           value: data-service
         - name: NETWORK_INTERFACE
