@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     role: capture
 spec:
-  serviceName: "{{ template "moloch.name" . }}-headless"
+  serviceName: {{ template "moloch.fullname" . }}-headless
   replicas: {{ .Values.molochConfig.workerNodes }}
   selector:
     matchLabels:
@@ -67,7 +67,7 @@ spec:
           name: molochlogs
         - mountPath: /data/moloch/raw
           name: molochraw
-        - mountPath: /config.ini
+        - mountPath: /data/moloch/etc/config.ini
           subPath: config.ini
           name: moloch-config
 
