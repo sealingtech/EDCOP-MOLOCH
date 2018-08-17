@@ -1,6 +1,12 @@
 #!/bin/bash
 # Script to initialize Moloch, add a user, and run the services
 
+# Add in service DNS to resolv.conf
+cp /etc/resolv.conf /etc/resolv2.conf
+sed -i 's/search /search '$RELEASE_NAME'-headless.'$NAMESPACE'.svc.cluster.local /' /etc/resolv2.conf
+cp /etc/resolv2.conf /etc/resolv.conf
+rm -rf /etc/resolv2.conf
+
 # Check to see if Elasticsearch is reachable
 echo "Trying to reach Elasticsearch..."
 until $(curl --output /dev/null --fail --silent -X GET "$ES_HOST:9200/_cat/health?v"); do
@@ -9,8 +15,8 @@ until $(curl --output /dev/null --fail --silent -X GET "$ES_HOST:9200/_cat/healt
 done
 
 # Check to see if Moloch has been installed before to prevent data loss
-STATUS5=$(curl -X --head "$ES_HOST:9200/sequence_v1" | jq --raw-output '.status')
-STATUS6=$(curl -X --head "$ES_HOST:9200/sequence_v2" | jq --raw-output '.status')
+STATUS5=$(curl -s -X --head "$ES_HOST:9200/sequence_v1" | jq --raw-output '.status')
+STATUS6=$(curl -s -X --head "$ES_HOST:9200/sequence_v2" | jq --raw-output '.status')
 
 # Initialize Moloch if this is the first install
 if [ "$STATUS5" = "404" ] && [ "$STATUS6" = "404" ]
