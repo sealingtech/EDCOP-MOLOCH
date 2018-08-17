@@ -37,9 +37,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: RELEASE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.release
+          value: {{ template "moloch.fullname" . }}
         - name: ES_HOST
           value: data-service
         - name: NETWORK_INTERFACE
