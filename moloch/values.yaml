@@ -1,6 +1,7 @@
 # EDCOP Moloch Chart values
 images:
   moloch: miked235/moloch
+  runner: gcr.io/edcop-public/runner:8
 networks:
   # Overlay is the name of the default cni network
   overlay: calico

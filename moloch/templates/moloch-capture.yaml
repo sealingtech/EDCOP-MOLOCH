@@ -26,10 +26,23 @@ spec:
         { "name": {{ .Values.networks.passive | quote }} }
       ]'
     spec:
+      initContainers:
+      - name: verifynode
+        image: {{ .Values.images.runner }}
+        env:
+        - name: STARTUP_SCRIPT
+          value: |
+            #!/bin/bash
+            set -e
+            sleep 10
+            if [ ! -f /sys/class/net/net0/operstate ]; then
+            echo "Network interface 'net0' not found, exiting..."
+            exit 1
+            fi
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
-        command: ["bash","-c","cp /etc/resolv.conf /etc/resolv2.conf && sed -i 's/search /search {{ template "moloch.fullname" . }}-headless.'$NAMESPACE'.svc.cluster.local /' /etc/resolv2.conf && cp /etc/resolv2.conf /etc/resolv.conf && /data/moloch/docker-entrypoint.sh"]
+        command: ["/data/moloch/docker-entrypoint.sh"]
         imagePullPolicy: Always
         securityContext:
           capabilities:
@@ -42,6 +55,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: RELEASE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.release
         - name: ES_HOST
           value: data-service
         - name: NETWORK_INTERFACE

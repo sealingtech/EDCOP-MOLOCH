@@ -25,7 +25,7 @@ spec:
       - name: moloch-viewer
         image: {{ .Values.images.moloch }}
         imagePullPolicy: Always
-        command: ["bash","-c","cp /etc/resolv.conf /etc/resolv2.conf && sed -i 's/search /search {{ template "moloch.fullname" . }}-headless.'$NAMESPACE'.svc.cluster.local /' /etc/resolv2.conf && cp /etc/resolv2.conf /etc/resolv.conf && /data/moloch/docker-entrypoint.sh"]
+        command: ["/data/moloch/docker-entrypoint.sh"]
         securityContext:
           capabilities:
               add:
@@ -36,6 +36,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: RELEASE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.release
         - name: ES_HOST
           value: data-service
         - name: NETWORK_INTERFACE
