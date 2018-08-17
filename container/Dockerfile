@@ -11,16 +11,13 @@ ENV ES_HOST=elasticsearch \
 	NETWORK_INTERFACE=eth0 \
 	CLUSTER_PW=secretpw \
 	ADMIN_PW=supersecretpw \
-	# true or false, both cannot be set to false
-	SENSOR=true \
-	VIEWER=true
-
+	SENSOR=true
 RUN chmod +x /data/moloch/*.sh && \
 	chmod +x /data/moloch/db/db.pl /data/moloch/*/*.sh && \
 	/data/moloch/configmoloch.sh && \
 	cd /data/moloch/viewer && \
 	ln -s /data/moloch/bin/node /usr/bin/nodejs && \
-	/data/moloch/bin/npm update && \
+	npm update && \
 	npm install . && \
 	yum clean -y all
 

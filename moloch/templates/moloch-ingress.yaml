@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
- name: {{ template "moloch.name" . }}-ingress
+ name: {{ template "moloch.fullname" . }}-ingress
  annotations:
    kubernetes.io/ingress.class: traefik
    traefik.frontend.rule.type: PathPrefixStrip
@@ -12,7 +12,7 @@ spec:
   - host: {{ .Values.ingress.host }}
     http:
       paths:
-      - path: /moloch
+      - path: /
         backend:
-          serviceName: {{ template "moloch.name" . }}-viewer
+          serviceName: {{ template "moloch.fullname" . }}-viewer
           servicePort: 8005

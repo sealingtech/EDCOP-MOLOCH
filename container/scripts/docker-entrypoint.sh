@@ -23,8 +23,8 @@ fi
 
 chmod a+rwx /data/moloch/raw /data/moloch/logs
 
-# Deploy Moloch as both a sensor and viewer node
-if [ "$SENSOR" = "true" ] && [ "$VIEWER" = "true" ]
+# Deploy Moloch as a sensor node
+if [ "$SENSOR" = "true" ]
 then
   echo "Starting Moloch capture and viewer..."
   /data/moloch/bin/moloch_config_interfaces.sh
@@ -32,22 +32,9 @@ then
   nohup /data/moloch/bin/moloch-capture -c /data/moloch/etc/config.ini >> /data/moloch/logs/capture.log 2>&1 &
   cd /data/moloch/viewer
   /data/moloch/bin/node viewer.js -c /data/moloch/etc/config.ini >> /data/moloch/logs/viewer.log 2>&1
-# Sensor only node
-elif [ "$SENSOR" = "true" ] 
-then
-  echo "Starting Moloch capture..."
-  /data/moloch/bin/moloch_config_interfaces.sh
-  cd /data/moloch
-  /data/moloch/bin/moloch-capture -c /data/moloch/etc/config.ini >> /data/moloch/logs/capture.log 2>&1
-# Viewer only node 
-elif [ "$VIEWER" = "true" ]
-then
+# Viewer only node
+else
   echo "Starting Moloch viewer..."
   cd /data/moloch/viewer
   /data/moloch/bin/node viewer.js -c /data/moloch/etc/config.ini >> /data/moloch/logs/viewer.log 2>&1
-# Error
-else
-  echo "Both SENSOR and VIEWER cannot be set to false, exiting..."
-  exit
 fi
-

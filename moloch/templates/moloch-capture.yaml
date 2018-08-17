@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     role: capture
 spec:
-  serviceName: {{ template "moloch.name" . }}-headless
+  serviceName: {{ template "moloch.fullname" . }}-headless
   replicas: {{ .Values.molochConfig.workerNodes }}
   selector:
     matchLabels:
@@ -29,6 +29,7 @@ spec:
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
+        command: ["bash","-c","cp /etc/resolv.conf /etc/resolv2.conf && sed -i 's/search /search {{ template "moloch.fullname" . }}-headless.'$NAMESPACE'.svc.cluster.local /' /etc/resolv2.conf && cp /etc/resolv2.conf /etc/resolv.conf && /data/moloch/docker-entrypoint.sh"]
         imagePullPolicy: Always
         securityContext:
           capabilities:
@@ -37,6 +38,10 @@ spec:
                 - NET_RAW
                 - IPC_LOCK
         env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: ES_HOST
           value: data-service
         - name: NETWORK_INTERFACE
@@ -47,8 +52,6 @@ spec:
           value: {{ .Values.molochConfig.env.adminpw }}
         - name: SENSOR
           value: "true"
-        - name: VIEWER
-          value: "false"
         ports:
         - name: cport-8005
           containerPort: 8005
@@ -64,9 +67,10 @@ spec:
           name: molochlogs
         - mountPath: /data/moloch/raw
           name: molochraw
-        - mounthPath: /data/moloch/etc/config.ini
+        - mountPath: /data/moloch/etc/config.ini
           subPath: config.ini
           name: moloch-config
+
       volumes:
       - name: molochlogs
         hostPath:
