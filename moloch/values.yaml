@@ -8,7 +8,6 @@ networks:
   passive: passive
 volumes:
   # Persistent data location on the host to store Moloch's data
-  logs: /EDCOP/bulk/moloch/logs
   raw: /EDCOP/bulk/moloch/raw
 nodeSelector:
   worker: sensor

@@ -78,8 +78,6 @@ spec:
             cpu: {{ .Values.molochConfig.limits.cpu | quote }}
             memory: {{ .Values.molochConfig.limits.memory | quote }}
         volumeMounts:
-        - mountPath: /data/moloch/logs
-          name: molochlogs
         - mountPath: /data/moloch/raw
           name: molochraw
         - mountPath: /data/moloch/etc/config.ini
@@ -87,9 +85,6 @@ spec:
           name: moloch-config
 
       volumes:
-      - name: molochlogs
-        hostPath:
-          path: {{ .Values.volumes.logs }}
       - name: molochraw
         hostPath:
           path: {{ .Values.volumes.raw }}
