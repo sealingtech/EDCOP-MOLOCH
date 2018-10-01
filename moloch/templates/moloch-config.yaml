@@ -58,7 +58,7 @@ data:
     webBasePath = /
 
     # Semicolon ';' seperated list of interfaces to listen on for traffic
-    interface=net0
+    interface=${INTERFACE}
 
     # The bpf filter of traffic to ignore
     #bpf=not port 9200

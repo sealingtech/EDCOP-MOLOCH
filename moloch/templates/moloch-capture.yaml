@@ -23,7 +23,9 @@ spec:
       annotations:
         networks: '[
         { "name": {{ .Values.networks.overlay | quote }} },
+        {{- if ne .Values.molochConfig.useHostNeworking "true" }}
         { "name": {{ .Values.networks.passive | quote }} }
+        {{- end }}
       ]'
     spec:
       initContainers:
@@ -67,6 +69,11 @@ spec:
           value: {{ .Values.molochConfig.env.adminpw }}
         - name: SENSOR
           value: "true"
+        - name: INTERFACE
+          valueFrom:
+            secretKeyRef:
+              name: passive-interface
+              key: interface
         ports:
         - name: cport-8005
           containerPort: 8005

@@ -5,6 +5,7 @@ images:
 networks:
   # Overlay is the name of the default cni network
   overlay: calico
+  # Passive is the name of the SR-IOV network - ignore if using host networking (See molochConfig)
   passive: passive
 volumes:
   # Persistent data location on the host to store Moloch's data
@@ -16,8 +17,11 @@ ingress:
   # Enter the FQDN of your host
   host: moloch.physical.edcop.io
 molochConfig:  
-  # Nodes refers to the number of worker nodes you have
+  # Worker nodes refers to the number of worker nodes you have
   workerNodes: 1
+  # true/false. Directly exposes host interfaces to the container instead of using SR-IOV.
+  # See github.com/sealingtech/EDCOP-CONFIGURESENSORS for more information
+  useHostNeworking: false
   # These settings impact Moloch's overall performance
   # https://github.com/aol/moloch/wiki/Settings#High_Performance_Settings
   performance:

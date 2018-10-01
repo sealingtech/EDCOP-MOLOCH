@@ -7,6 +7,9 @@ sed -i 's/search /search '$RELEASE_NAME'-headless.'$NAMESPACE'.svc.cluster.local
 cp /etc/resolv2.conf /etc/resolv.conf
 rm -rf /etc/resolv2.conf
 
+# Insert interface environment variable into config
+sed -i 's/${INTERFACE}/'$INTERFACE' /g' /data/moloch/etc/config.ini
+
 # Check to see if Elasticsearch is reachable
 echo "Trying to reach Elasticsearch..."
 until $(curl --output /dev/null --fail --silent -X GET "$ES_HOST:9200/_cat/health?v"); do
