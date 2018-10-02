@@ -99,6 +99,9 @@ spec:
         configMap:
           name: {{ template "moloch.fullname" . }}-config 
       restartPolicy: Always
-      dnsPolicy: ClusterFirst
+      {{- if eq .Values.molochConfig.useHostNeworking }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
       nodeSelector:
         {{ .Values.nodeSelector.worker }} : "true"
