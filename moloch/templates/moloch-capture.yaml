@@ -32,13 +32,18 @@ spec:
       - name: verifynode
         image: {{ .Values.images.runner }}
         env:
+        - name: INTERFACE
+          valueFrom:
+            secretKeyRef:
+              name: passive-interface
+              key: interface
         - name: STARTUP_SCRIPT
           value: |
             #!/bin/bash
             set -e
             sleep 10
-            if [ ! -f /sys/class/net/net0/operstate ]; then
-            echo "Network interface 'net0' not found, exiting..."
+            if [ ! -f /sys/class/net/$INTERFACE/operstate ]; then
+            echo "Network interface '$INTERFACE' not found, exiting..."
             exit 1
             fi
             cp /etc/moloch/config/config.ini /etc/moloch/newconfig/config.ini
@@ -51,7 +56,7 @@ spec:
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
-        command: ["/data/moloch/docker-entrypoint.sh"]
+        command: ["yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini", "&&", /data/moloch/docker-entrypoint.sh"]
         imagePullPolicy: Always
         securityContext:
           capabilities:
@@ -92,7 +97,7 @@ spec:
         volumeMounts:
         - mountPath: /data/moloch/raw
           name: molochraw
-        - mountPath: /data/moloch/etc/
+        - mountPath: /tmp/moloch
           name: moloch-final-config
 
       volumes:
