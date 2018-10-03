@@ -46,13 +46,6 @@ spec:
             echo "Network interface '$INTERFACE' not found, exiting..."
             exit 1
             fi
-            cp /etc/moloch/config/config.ini /etc/moloch/newconfig/config.ini
-        volumeMounts:
-        - mountPath: /etc/moloch/newconfig/
-          name: moloch-final-config
-        - mountPath: /etc/moloch/config/config.ini
-          subPath: config.ini
-          name: moloch-config
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
@@ -97,8 +90,9 @@ spec:
         volumeMounts:
         - mountPath: /data/moloch/raw
           name: molochraw
-        - mountPath: /tmp/moloch
-          name: moloch-final-config
+        - mountPath: /tmp/moloch/config.ini
+          subPath: config.ini
+          name: moloch-config
 
       volumes:
       - name: molochraw
@@ -106,9 +100,7 @@ spec:
           path: {{ .Values.volumes.raw }}
       - name: moloch-config
         configMap:
-          name: {{ template "moloch.fullname" . }}-config
-      - name: moloch-final-config
-        emptyDir: {}     
+          name: {{ template "moloch.fullname" . }}-config   
       restartPolicy: Always
       {{- if .Values.molochConfig.useHostNeworking }}
       hostNetwork: true
