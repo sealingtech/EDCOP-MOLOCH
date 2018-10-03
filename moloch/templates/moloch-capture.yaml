@@ -41,6 +41,13 @@ spec:
             echo "Network interface 'net0' not found, exiting..."
             exit 1
             fi
+            cp /etc/moloch/config/config.ini /etc/moloch/newconfig/config.ini
+        volumeMounts:
+        - mountPath: /etc/moloch/newconfig/
+          name: moloch-final-config
+        - mountPath: /etc/moloch/config/config.ini
+          subPath: config.ini
+          name: moloch-config
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
@@ -85,9 +92,8 @@ spec:
         volumeMounts:
         - mountPath: /data/moloch/raw
           name: molochraw
-        - mountPath: /data/moloch/etc/config.ini
-          subPath: config.ini
-          name: moloch-config
+        - mountPath: /data/moloch/etc/
+          name: moloch-final-config
 
       volumes:
       - name: molochraw
@@ -96,7 +102,8 @@ spec:
       - name: moloch-config
         configMap:
           name: {{ template "moloch.fullname" . }}-config
-          defaultMode: 0664          
+      - name: moloch-final-config
+        emptyDir: {}     
       restartPolicy: Always
       {{- if .Values.molochConfig.useHostNeworking }}
       hostNetwork: true
