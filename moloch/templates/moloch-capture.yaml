@@ -23,7 +23,7 @@ spec:
       annotations:
         networks: '[
         { "name": {{ .Values.networks.overlay | quote }} },
-        {{- if ne .Values.molochConfig.useHostNeworking "true" }}
+        {{- if ne .Values.molochConfig.useHostNeworking true }}
         { "name": {{ .Values.networks.passive | quote }} }
         {{- end }}
       ]'
@@ -61,8 +61,6 @@ spec:
           value: {{ template "moloch.fullname" . }}
         - name: ES_HOST
           value: data-service
-        - name: NETWORK_INTERFACE
-          value: {{ .Values.networks.passive }}
         - name: CLUSTER_PW
           value: {{ .Values.molochConfig.env.clusterpw }}
         - name: ADMIN_PW
@@ -97,9 +95,10 @@ spec:
           path: {{ .Values.volumes.raw }}
       - name: moloch-config
         configMap:
-          name: {{ template "moloch.fullname" . }}-config 
+          name: {{ template "moloch.fullname" . }}-config
+          defaultMode: 0664          
       restartPolicy: Always
-      {{- if eq .Values.molochConfig.useHostNeworking }}
+      {{- if .Values.molochConfig.useHostNeworking }}
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       {{- end }}

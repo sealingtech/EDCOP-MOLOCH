@@ -11,7 +11,7 @@ ENV ES_HOST=elasticsearch \
 	INTERFACE=eth0 \
 	CLUSTER_PW=secretpw \
 	ADMIN_PW=supersecretpw \
-	SENSOR=true 
+	SENSOR=true
 # Kubernetes sets these
 ENV NAMESPACE="" 
 ENV RELEASE_NAME="" 
