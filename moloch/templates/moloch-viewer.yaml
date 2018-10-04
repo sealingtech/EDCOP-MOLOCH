@@ -32,16 +32,13 @@ spec:
                 - NET_ADMIN
                 - NET_RAW
         env:
-        - name: NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: RELEASE_NAME
-          value: {{ template "moloch.fullname" . }}
         - name: ES_HOST
           value: data-service
-        - name: NETWORK_INTERFACE
-          value: {{ .Values.networks.passive }}
+        - name: INTERFACE
+          valueFrom:
+            secretKeyRef:
+              name: passive-interface
+              key: interface
         - name: CLUSTER_PW
           value: {{ .Values.molochConfig.env.clusterpw }}
         - name: ADMIN_PW
@@ -68,5 +65,8 @@ spec:
           name: {{ template "moloch.fullname" . }}-config
       restartPolicy: Always
       dnsPolicy: ClusterFirst
+      dnsConfig:
+        searches:
+          - {{ template "moloch.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local
       nodeSelector:
         {{ .Values.nodeSelector.viewer }} : "true"
