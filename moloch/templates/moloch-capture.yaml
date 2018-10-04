@@ -22,9 +22,11 @@ spec:
         role: capture
       annotations:
         networks: '[
-        { "name": {{ .Values.networks.overlay | quote }} },
         {{- if ne .Values.molochConfig.useHostNeworking true }}
+        { "name": {{ .Values.networks.overlay | quote }} },
         { "name": {{ .Values.networks.passive | quote }} }
+        {{- else }}
+        { "name": {{ .Values.networks.overlay | quote }} }
         {{- end }}
       ]'
     spec:
@@ -50,7 +52,7 @@ spec:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
         command: ["bash", "-c", "yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini && /data/moloch/docker-entrypoint.sh"]
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         securityContext:
           capabilities:
               add:

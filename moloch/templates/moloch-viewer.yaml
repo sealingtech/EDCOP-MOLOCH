@@ -18,13 +18,12 @@ spec:
       annotations:
         networks: '[
         { "name": {{ .Values.networks.overlay | quote }} }
-        { "name": {{ .Values.networks.passive | quote }} }
       ]'
     spec:
       containers:
       - name: moloch-viewer
         image: {{ .Values.images.moloch }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command: ["/data/moloch/docker-entrypoint.sh"]
         securityContext:
           capabilities:
