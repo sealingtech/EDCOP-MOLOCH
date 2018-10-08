@@ -52,7 +52,7 @@ spec:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
         command: ["bash", "-c", "yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini && /data/moloch/docker-entrypoint.sh"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         securityContext:
           capabilities:
               add:

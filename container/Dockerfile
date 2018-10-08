@@ -1,5 +1,5 @@
 FROM centos:latest
-ENV VERSION=1.5.2
+ENV VERSION=1.5.3
 RUN yum -y update && yum -y install epel-release && \
 	yum -y install jq wget nodejs bzip2 curl net-tools fontconfig freetype freetype-devel fontconfig-devel libyaml-devel libpcap-devel libstdc++ ethtool pcre tcpdump pcre-devel libyaml pkgconfig flex bison gcc-c++ zlib-devel e2fsprogs-devel openssl-devel file-devel make gettext libuuid-devel perl-JSON bzip2-libs bzip2-devel perl-libwww-perl libpng-devel xz libffi-devel GeoIP vim && \
 	wget https://files.molo.ch/builds/centos-7/moloch-$VERSION-1.x86_64.rpm && \
@@ -12,13 +12,9 @@ ENV ES_HOST=elasticsearch \
 	CLUSTER_PW=secretpw \
 	ADMIN_PW=supersecretpw \
 	SENSOR=true
-# Kubernetes sets these
-ENV NAMESPACE="" 
-ENV RELEASE_NAME="" 
 
 RUN chmod +x /data/moloch/*.sh && \
 	chmod +x /data/moloch/db/db.pl /data/moloch/*/*.sh && \
-	/data/moloch/configmoloch.sh && \
 	cd /data/moloch/viewer && \
 	ln -s /data/moloch/bin/node /usr/bin/nodejs && \
 	npm update . && \

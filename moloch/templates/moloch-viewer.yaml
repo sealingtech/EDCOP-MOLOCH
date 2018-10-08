@@ -23,13 +23,8 @@ spec:
       containers:
       - name: moloch-viewer
         image: {{ .Values.images.moloch }}
-        imagePullPolicy: IfNotPresent
-        command: ["/data/moloch/docker-entrypoint.sh"]
-        securityContext:
-          capabilities:
-              add:
-                - NET_ADMIN
-                - NET_RAW
+        imagePullPolicy: Always
+        command: ["bash", "-c", "yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini && /data/moloch/docker-entrypoint.sh"]
         env:
         - name: ES_HOST
           value: data-service
@@ -55,7 +50,7 @@ spec:
             cpu: {{ .Values.molochConfig.limits.cpu | quote }}
             memory: {{ .Values.molochConfig.limits.memory | quote }}
         volumeMounts:
-        - mountPath: /data/moloch/etc/config.ini
+        - mountPath: /tmp/moloch/config.ini
           subPath: config.ini
           name: moloch-config
       volumes:
