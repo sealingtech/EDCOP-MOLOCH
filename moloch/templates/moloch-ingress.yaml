@@ -1,14 +1,14 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
- name: {{ template "moloch.fullname" . }}-ingress
- annotations:
-   kubernetes.io/ingress.class: traefik
-   traefik.frontend.rule.type: PathPrefixStrip
-   # ingress.kubernetes.io/auth-type: "basic"
-   # ingress.kubernetes.io/auth-secret: "ingress-auth"
+  name: {{ template "moloch.fullname" . }}-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.frontend.rule.type: PathPrefixStrip
+    # ingress.kubernetes.io/auth-type: "basic"
+    # ingress.kubernetes.io/auth-secret: "ingress-auth"
 spec:
- rules:
+  rules:
   - host: {{ .Values.ingress.host }}
     http:
       paths:
