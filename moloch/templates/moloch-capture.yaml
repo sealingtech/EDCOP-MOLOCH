@@ -22,7 +22,7 @@ spec:
         role: capture
       annotations:
         networks: '[
-        {{- if ne .Values.molochConfig.useHostNeworking true }}
+        {{- if ne .Values.networks.useHostNeworking true }}
         { "name": {{ .Values.networks.overlay | quote }} },
         { "name": {{ .Values.networks.passive | quote }} }
         {{- else }}
@@ -98,7 +98,7 @@ spec:
         configMap:
           name: {{ template "moloch.fullname" . }}-config   
       restartPolicy: Always
-      {{- if .Values.molochConfig.useHostNeworking }}
+      {{- if .Values.networks.useHostNeworking }}
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       {{- end }}
