@@ -118,7 +118,7 @@ data:
     #viewHost = localhost
 
     # By default the viewer process is https://hostname:<viewPort> for each node.
-    #viewUrl = https://HOSTNAME:8005
+    viewUrl = http://${POD_NAME}:8005
 
     # Path of the maxmind geoip country file.  Download free version from:
     #  https://updates.maxmind.com/app/update_secure?edition_id=GeoLite2-Country

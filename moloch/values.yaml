@@ -1,6 +1,6 @@
 # EDCOP Moloch Chart values
 images:
-  moloch: gcr.io/edcop-dev/mike-moloch:1
+  moloch: gcr.io/edcop-dev/mike-moloch:5
   runner: gcr.io/edcop-public/runner:8
 networks:
   # Overlay is the name of the default cni network
@@ -28,8 +28,8 @@ molochConfig:
     maxStreams: 1000000
     maxPacketsInQueue: 200000
     maxPackets: 10000           # Moloch writes a session record after this many
-    packetThreads: 5            
-    pcapWriteSize: 262143       # Buffer size when writing pcap files
+    packetThreads: 1            
+    pcapWriteSize: 262144       # Buffer size when writing pcap files
     tpacketv3Threads: 2         
   env:
     # Admin user for the web interface
