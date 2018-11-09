@@ -73,6 +73,10 @@ spec:
             secretKeyRef:
               name: passive-interface
               key: interface
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         ports:
         - name: cport-8005
           containerPort: 8005
