@@ -2,7 +2,7 @@
 
 Table of Contents
 -----------------
- 
+
 * [Configuration Guide](#configuration-guide)
 	* [Image Repository](#image-repository)
 	* [Networks](#networks)
@@ -13,33 +13,34 @@ Table of Contents
 		* [Performance](#performance)
 		* [Environment Variables](#environment-variables)
 		* [Resource Limits](#resource-limits)
-	
+
 # Configuration Guide
 
 Within this configuration guide, you will find instructions for modifying Moloch's helm chart. All changes should be made in the *values.yaml* file.
 Please share any bugs or feature requests via GitHub issues.
- 
+
 ## Image Repository
 
 By default, the image is pulled from Docker's Hub, which is a customized Moloch image with the ability to specify viewer/capture only nodes. This value should not be changed because the configuration depends on the environment variables specified in the yamls.
- 
+
 ```
 images:
-  moloch: miked235/moloch
+  moloch: gcr.io/edcop-dev/mike-moloch:5
+  runner: gcr.io/edcop-public/runner:8
 ```
- 
+
 ## Networks
 
-Moloch only uses 2 interfaces because it can only be deployed in passive mode to record traffic. By default, these interfaces are named *calico* and *passive*. 
+Moloch only uses 2 interfaces because it can only be deployed in passive mode to record traffic. By default, these interfaces are named *calico* and *passive*.
 
 ```
 networks:
   overlay: calico
   passive: passive
 ```
- 
+
 To find the names of your networks, use the following command:
- 
+
 ```
 # kubectl get networks
 NAME		AGE
@@ -51,24 +52,24 @@ inline-2	1d
 
 ## Persistent Storage
 
-These values tell Kubernetes where Moloch's PCAPs and logs should be stored on the host for persistent storage. The *raw* option is for Moloch's raw PCAP files and the *logs* option is for Moloch's capture/viewer logs. By default, these values are set to */bulk/EDCOP/moloch/* but should be changed according to your logical volume setup. 
+These values tell Kubernetes where Moloch's PCAPs and logs should be stored on the host for persistent storage. The *raw* option is for Moloch's raw PCAP files and the *logs* option is for Moloch's capture/viewer logs. By default, these values are set to */bulk/EDCOP/moloch/* but should be changed according to your logical volume setup.
 
 ```
 volumes:
   logs: /bulk/EDCOP/moloch/logs
   raw: /bulk/EDCOP/moloch/raw
 ```
-	  
+
 ## Node Selector
 
 This value tells Kubernetes which hosts the daemonset and statefulset should be deployed to by using labels given to the hosts. The viewer nodes run on the master while the capture nodes run on the workers. Hosts without the defined label will not receive pods. Moloch viewer will only deploy to the node labeled 'infrastructure=true', while the Moloch worker will deploy to nodes labeled 'sensor=true'
- 
+
 ```
 nodeSelector:
   worker: sensor
   viewer: infrastructure
 ```
- 
+
 To find out what labels your hosts have, please use the following:
 ```
 # kubectl get nodes --show-labels
@@ -100,7 +101,7 @@ molochConfig:
   workerNodes: 3
 ```
 
-Moloch allows you to set limits on many different performance settings, but the ones included in the ```values.yaml``` are the most important. Before configuring these values, you should read Moloch's best practices at https://github.com/aol/moloch/wiki/Settings#High_Performance_Settings. By default, these values are set to Moloch's recommended settings. 
+Moloch allows you to set limits on many different performance settings, but the ones included in the ```values.yaml``` are the most important. Before configuring these values, you should read Moloch's best practices at https://github.com/aol/moloch/wiki/Settings#High_Performance_Settings. By default, these values are set to Moloch's recommended settings.
 
 ```
 molochConfig:
@@ -115,7 +116,7 @@ molochConfig:
 
 ### Environment Variables
 
-In order to make Moloch more secure, you need to set a couple of passwords for Moloch's data transfer and access to its viewer. You can set the cluster and encrypt passwords to something random, but the admin password will be used to access the web interface as the admin superuser. You could use something like pwgen to create random passwords, but this isn't necessary. 
+In order to make Moloch more secure, you need to set a couple of passwords for Moloch's data transfer and access to its viewer. You can set the cluster and encrypt passwords to something random, but the admin password will be used to access the web interface as the admin superuser. You could use something like pwgen to create random passwords, but this isn't necessary.
 
 ```
 molochConfig:
@@ -127,7 +128,7 @@ molochConfig:
 
 ### Resource Limits
 
-You can set limits on Moloch to ensure it doesn't use more CPU/memory space than necessary. Finding the right balance can be tricky, so some testing may be required. 
+You can set limits on Moloch to ensure it doesn't use more CPU/memory space than necessary. Finding the right balance can be tricky, so some testing may be required.
 
 ```
 molochConfig:

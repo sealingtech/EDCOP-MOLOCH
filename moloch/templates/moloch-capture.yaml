@@ -22,14 +22,36 @@ spec:
         role: capture
       annotations:
         networks: '[
+        {{- if ne .Values.networks.useHostNeworking true }}
         { "name": {{ .Values.networks.overlay | quote }} },
         { "name": {{ .Values.networks.passive | quote }} }
+        {{- else }}
+        { "name": {{ .Values.networks.overlay | quote }} }
+        {{- end }}
       ]'
     spec:
+      initContainers:
+      - name: verifynode
+        image: {{ .Values.images.runner }}
+        env:
+        - name: INTERFACE
+          valueFrom:
+            secretKeyRef:
+              name: passive-interface
+              key: interface
+        - name: STARTUP_SCRIPT
+          value: |
+            #!/bin/bash
+            set -e
+            sleep 10
+            if [ ! -f /sys/class/net/$INTERFACE/operstate ]; then
+            echo "Network interface '$INTERFACE' not found, exiting..."
+            exit 1
+            fi
       containers:
       - name: moloch-capture
         image: {{ .Values.images.moloch }}
-        command: ["bash","-c","cp /etc/resolv.conf /etc/resolv2.conf && sed -i 's/search /search {{ template "moloch.fullname" . }}-headless.'$NAMESPACE'.svc.cluster.local /' /etc/resolv2.conf && cp /etc/resolv2.conf /etc/resolv.conf && /data/moloch/docker-entrypoint.sh"]
+        command: ["bash", "-c", "yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini && /data/moloch/docker-entrypoint.sh"]
         imagePullPolicy: Always
         securityContext:
           capabilities:
@@ -44,14 +66,21 @@ spec:
               fieldPath: metadata.namespace
         - name: ES_HOST
           value: data-service
-        - name: NETWORK_INTERFACE
-          value: {{ .Values.networks.passive }}
         - name: CLUSTER_PW
           value: {{ .Values.molochConfig.env.clusterpw }}
         - name: ADMIN_PW
           value: {{ .Values.molochConfig.env.adminpw }}
         - name: SENSOR
           value: "true"
+        - name: INTERFACE
+          valueFrom:
+            secretKeyRef:
+              name: passive-interface
+              key: interface
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         ports:
         - name: cport-8005
           containerPort: 8005
@@ -63,25 +92,26 @@ spec:
             cpu: {{ .Values.molochConfig.limits.cpu | quote }}
             memory: {{ .Values.molochConfig.limits.memory | quote }}
         volumeMounts:
-        - mountPath: /data/moloch/logs
-          name: molochlogs
         - mountPath: /data/moloch/raw
           name: molochraw
-        - mountPath: /data/moloch/etc/config.ini
+        - mountPath: /tmp/moloch/config.ini
           subPath: config.ini
           name: moloch-config
 
       volumes:
-      - name: molochlogs
-        hostPath:
-          path: {{ .Values.volumes.logs }}
       - name: molochraw
         hostPath:
           path: {{ .Values.volumes.raw }}
       - name: moloch-config
         configMap:
-          name: {{ template "moloch.fullname" . }}-config 
+          name: {{ template "moloch.fullname" . }}-config   
       restartPolicy: Always
-      dnsPolicy: ClusterFirst
+      {{- if .Values.networks.useHostNeworking }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      dnsConfig:
+        searches:
+          - {{ template "moloch.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local
       nodeSelector:
         {{ .Values.nodeSelector.worker }} : "true"

@@ -1,5 +1,5 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   name: {{ template "moloch.fullname" . }}-viewer
   labels:
@@ -8,7 +8,12 @@ metadata:
     release: {{ .Release.Name }}
     role: viewer
 spec:
+  serviceName: {{ template "moloch.fullname" . }}-headless
   replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "moloch.name" . }}
+      role: viewer
   template:
     metadata:
       name: {{ template "moloch.name" . }}-viewer
@@ -18,19 +23,13 @@ spec:
       annotations:
         networks: '[
         { "name": {{ .Values.networks.overlay | quote }} }
-        { "name": {{ .Values.networks.passive | quote }} }
       ]'
     spec:
       containers:
       - name: moloch-viewer
         image: {{ .Values.images.moloch }}
         imagePullPolicy: Always
-        command: ["bash","-c","cp /etc/resolv.conf /etc/resolv2.conf && sed -i 's/search /search {{ template "moloch.fullname" . }}-headless.'$NAMESPACE'.svc.cluster.local /' /etc/resolv2.conf && cp /etc/resolv2.conf /etc/resolv.conf && /data/moloch/docker-entrypoint.sh"]
-        securityContext:
-          capabilities:
-              add:
-                - NET_ADMIN
-                - NET_RAW
+        command: ["bash", "-c", "yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini && /data/moloch/docker-entrypoint.sh"]
         env:
         - name: NAMESPACE
           valueFrom:
@@ -38,14 +37,21 @@ spec:
               fieldPath: metadata.namespace
         - name: ES_HOST
           value: data-service
-        - name: NETWORK_INTERFACE
-          value: {{ .Values.networks.passive }}
+        - name: INTERFACE
+          valueFrom:
+            secretKeyRef:
+              name: passive-interface
+              key: interface
         - name: CLUSTER_PW
           value: {{ .Values.molochConfig.env.clusterpw }}
         - name: ADMIN_PW
           value: {{ .Values.molochConfig.env.adminpw }}
         - name: SENSOR
           value: "false"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         ports:
         - name: cport-8005
           containerPort: 8005
@@ -57,14 +63,18 @@ spec:
             cpu: {{ .Values.molochConfig.limits.cpu | quote }}
             memory: {{ .Values.molochConfig.limits.memory | quote }}
         volumeMounts:
-        - mountPath: /data/moloch/etc/config.ini
+        - mountPath: /tmp/moloch/config.ini
           subPath: config.ini
           name: moloch-config
+
       volumes:
       - name: moloch-config
         configMap:
           name: {{ template "moloch.fullname" . }}-config
       restartPolicy: Always
       dnsPolicy: ClusterFirst
+      dnsConfig:
+        searches:
+          - {{ template "moloch.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local
       nodeSelector:
         {{ .Values.nodeSelector.viewer }} : "true"
